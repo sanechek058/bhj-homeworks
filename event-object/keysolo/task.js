@@ -17,19 +17,25 @@ class Game {
   }
 
   registerEvents() {
-    /*
-      TODO:
-      Написать обработчик события, который откликается
-      на каждый введённый символ.
-      В случае правильного ввода символа вызываем this.success()
-      При неправильном вводе символа - this.fail();
-      DOM-элемент текущего символа находится в свойстве this.currentSymbol.
-     */
+    document.addEventListener('keyup', event => {
+      if (event.key.length !== 1) return;
+      
+      const enteredChar = event.key.toLowerCase();
+      
+      const currentChar = this.currentSymbol.textContent.toLowerCase();
+      
+      if (enteredChar === currentChar) {
+        this.success();
+      } else {
+        this.fail();
+      }
+    });
   }
 
   success() {
-    if(this.currentSymbol.classList.contains("symbol_current")) this.currentSymbol.classList.remove("symbol_current");
+    this.currentSymbol.classList.remove('symbol_current');
     this.currentSymbol.classList.add('symbol_correct');
+    
     this.currentSymbol = this.currentSymbol.nextElementSibling;
 
     if (this.currentSymbol !== null) {
@@ -37,24 +43,31 @@ class Game {
       return;
     }
 
-    if (++this.winsElement.textContent === 10) {
+    this.winsElement.textContent = parseInt(this.winsElement.textContent) + 1;
+
+    if (parseInt(this.winsElement.textContent) === 10) {
       alert('Победа!');
       this.reset();
+      return;
     }
+    
     this.setNewWord();
   }
 
   fail() {
-    if (++this.lossElement.textContent === 5) {
+    this.lossElement.textContent = parseInt(this.lossElement.textContent) + 1;
+
+    if (parseInt(this.lossElement.textContent) === 5) {
       alert('Вы проиграли!');
       this.reset();
+      return;
     }
+    
     this.setNewWord();
   }
 
   setNewWord() {
     const word = this.getWord();
-
     this.renderWord(word);
   }
 
@@ -81,14 +94,14 @@ class Game {
     const html = [...word]
       .map(
         (s, i) =>
-          `<span class="symbol ${i === 0 ? 'symbol_current': ''}">${s}</span>`
+          `<span class="symbol ${i === 0 ? 'symbol_current' : ''}">${s}</span>`
       )
       .join('');
+    
     this.wordElement.innerHTML = html;
-
+    
     this.currentSymbol = this.wordElement.querySelector('.symbol_current');
   }
 }
 
-new Game(document.getElementById('game'))
-
+new Game(document.getElementById('game'));
